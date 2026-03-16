@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.vercel/
+.vscode/
+.DS_Store
+*.log
+.vercel
