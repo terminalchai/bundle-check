@@ -8,6 +8,7 @@ import PackageTable from '../components/PackageTable'
 import ProgressRing from '../components/ProgressRing'
 import Toast from '../components/Toast'
 import { fetchPackageSizes } from '../lib/bundlephobia'
+import { getAlternative } from '../lib/alternatives'
 
 export default function Home() {
   const [project, setProject]       = useState(null)
@@ -19,6 +20,14 @@ export default function Home() {
   const [sortDir, setSortDir]       = useState('desc')
   const [selected, setSelected]     = useState(null)
   const [toast, setToast]           = useState('')
+
+  function resetAnalysis() {
+    setProject(null)
+    setPackages([])
+    setLoading(false)
+    setProgress({ completed: 0, total: 0 })
+    setSelected(null)
+  }
 
   async function startAnalysis(parsed, nextIncludeDev = includeDev) {
     setProject(parsed)
@@ -60,9 +69,13 @@ export default function Home() {
   }
 
   function handleSort(col) {
-    const nextDir = sortBy === col && sortDir === 'desc' ? 'asc' : 'desc'
-    setSortBy(col)
-    setSortDir(nextDir)
+    if (sortBy !== col) {
+      setSortBy(col)
+      setSortDir(col === 'name' ? 'asc' : 'desc')
+      return
+    }
+
+    setSortDir(prev => prev === 'desc' ? 'asc' : 'desc')
   }
 
   const sortedPackages = useMemo(() => {
@@ -76,7 +89,7 @@ export default function Home() {
         case 'gzip': av = a.gzip || 0; bv = b.gzip || 0; break
         case 'time': av = a.gzip || 0; bv = b.gzip || 0; break
         case 'sideEffects': av = Number(a.hasSideEffects); bv = Number(b.hasSideEffects); break
-        case 'alt': av = Number(Boolean(a.name)); bv = Number(Boolean(b.name)); break
+        case 'alt': av = Number(Boolean(getAlternative(a.name))); bv = Number(Boolean(getAlternative(b.name))); break
         default: av = a.gzip || 0; bv = b.gzip || 0
       }
       if (av < bv) return -1 * dir
@@ -89,50 +102,61 @@ export default function Home() {
   const hasResults = packages.length > 0 && !loading
 
   return (
-    <main style={{ minHeight: '100vh' }}>
+    <main id="app-content" style={{ minHeight: '100vh' }} aria-busy={loading}>
+      <a href="#main-panel" className="skip-link">Skip to main content</a>
       <div className="bg-orb orb-1" />
       <div className="bg-orb orb-2" />
       <div className="grid-overlay" />
 
-      <section className="shell hero-shell">
-        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} style={{ width: '100%' }}>
+      <section id="main-panel" className="shell hero-shell" aria-labelledby="hero-title">
+        <motion.header initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} style={{ width: '100%' }}>
           <div className="hero-badge">
             <BarChart3 size={14} />
             Bundlephobia-powered package cost analyser
           </div>
-          <h1 className="hero-title">Understand the real cost of every dependency.</h1>
+          <h1 id="hero-title" className="hero-title">Understand the real cost of every dependency.</h1>
           <p className="hero-copy">
             Drop a <span>package.json</span> and instantly see raw size, gzip size, estimated 3G download time, side-effect flags, and lighter alternatives — with a visual treemap that surfaces the worst offenders first.
           </p>
 
           <div className="toggle-row">
-            <button className={`ghost-toggle ${includeDev ? 'active' : ''}`} onClick={handleToggleDev}>
+            <button type="button" className={`ghost-toggle ${includeDev ? 'active' : ''}`} onClick={handleToggleDev} aria-pressed={includeDev} aria-describedby="dev-toggle-help">
               <Sparkles size={14} />
-              {includeDev ? 'Including devDependencies' : 'Ignore devDependencies'}
+              {includeDev ? 'Including devDependencies' : 'Include devDependencies'}
             </button>
-            {project && (
-              <button className="ghost-toggle" onClick={() => startAnalysis(project, includeDev)}>
-                <RefreshCw size={14} />
-                Re-run analysis
-              </button>
-            )}
           </div>
-        </motion.div>
+          <p id="dev-toggle-help" className="subtle-copy">
+            Toggle this on if you also want to count build tools, linters, test packages, and other development-only dependencies.
+          </p>
+        </motion.header>
 
         {!hasResults && !loading && <DropZone onParsed={handleParsed} />}
 
         <AnimatePresence mode="wait">
           {loading && (
-            <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="panel center-panel">
+            <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="panel center-panel" role="status" aria-live="polite">
               <ProgressRing completed={progress.completed} total={progress.total} />
             </motion.div>
           )}
 
           {hasResults && (
-            <motion.div key="results" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div className="project-chip">
-                <PackageOpen size={14} />
-                {project?.name || 'Project'}
+            <motion.section key="results" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }} aria-labelledby="results-heading">
+              <h2 id="results-heading" className="sr-only">Package analysis results</h2>
+              <div className="results-head">
+                <div className="project-chip">
+                  <PackageOpen size={14} />
+                  {project?.name || 'Project'}
+                </div>
+                <div className="project-actions">
+                  <button type="button" className="ghost-toggle" onClick={() => startAnalysis(project, includeDev)}>
+                    <RefreshCw size={14} />
+                    Re-run analysis
+                  </button>
+                  <button type="button" className="ghost-toggle" onClick={resetAnalysis}>
+                    <RefreshCw size={14} />
+                    Analyse another package
+                  </button>
+                </div>
               </div>
 
               <SummaryBar packages={packages} />
@@ -148,7 +172,7 @@ export default function Home() {
                   onSelect={setSelected}
                 />
               </div>
-            </motion.div>
+            </motion.section>
           )}
         </AnimatePresence>
       </section>

@@ -23,6 +23,9 @@ export default function Treemap({ packages, selected, onSelect }) {
       <div style={{ fontSize: '0.74rem', color: 'var(--dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>
         Treemap by gzip size
       </div>
+      <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginBottom: '0.75rem' }}>
+        Click a block to highlight the same package in the table, or use the package buttons below the chart for keyboard navigation.
+      </div>
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%" style={{ display: 'block', borderRadius: '0.75rem', background: 'var(--surface2)' }} role="img" aria-label="Package treemap by gzip size">
         {nodes.map((node, i) => {
           const isActive = selected === node.name
@@ -34,6 +37,16 @@ export default function Treemap({ packages, selected, onSelect }) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.015 }}
               onClick={() => onSelect(node.name)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onSelect(node.name)
+                }
+              }}
+              tabIndex={0}
+              role="button"
+              aria-label={`Select ${node.name} in treemap`}
+              aria-pressed={isActive}
               style={{ cursor: 'pointer' }}
             >
               <rect
@@ -66,6 +79,20 @@ export default function Treemap({ packages, selected, onSelect }) {
           )
         })}
       </svg>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.875rem' }}>
+        {nodes.slice(0, 8).map(node => (
+          <button
+            key={node.name}
+            type="button"
+            onClick={() => onSelect(node.name)}
+            className={`ghost-toggle ${selected === node.name ? 'active' : ''}`}
+            aria-pressed={selected === node.name}
+            style={{ textTransform: 'none', letterSpacing: 'normal' }}
+          >
+            {node.name}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

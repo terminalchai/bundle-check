@@ -9,7 +9,7 @@ export default function ProgressRing({ completed, total }) {
   const strokeDashoffset = circumference - progress * circumference
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} aria-live="polite" aria-atomic="true">
       <div style={{ position: 'relative', width: 96, height: 96 }}>
         <svg width="96" height="96" viewBox="0 0 96 96" style={{ transform: 'rotate(-90deg)' }}>
           <circle cx="48" cy="48" r={normalized} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={stroke} />
@@ -43,7 +43,7 @@ export default function ProgressRing({ completed, total }) {
           Analysing dependencies...
         </div>
         <div style={{ fontSize: '0.84rem', color: 'var(--muted)' }}>
-          Fetching live package size data from Bundlephobia.
+          Fetching live package size data from Bundlephobia. {completed} of {total} completed.
         </div>
       </div>
     </div>

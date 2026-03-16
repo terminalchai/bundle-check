@@ -81,6 +81,36 @@ main {
   z-index: 1;
 }
 
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 20;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid rgba(124,108,240,0.38);
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .hero-shell {
   padding: 4.5rem 0 3rem;
   display: flex;
@@ -129,6 +159,14 @@ main {
   gap: 0.75rem;
 }
 
+.subtle-copy {
+  margin: 0.8rem 0 0;
+  max-width: 700px;
+  color: var(--dim);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
 .ghost-toggle {
   text-transform: none;
   letter-spacing: normal;
@@ -166,6 +204,20 @@ main {
   align-items: start;
 }
 
+.results-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 :focus-visible {
   outline: 2px solid rgba(124,108,240,0.85);
   outline-offset: 2px;
@@ -179,4 +231,5 @@ main {
   .shell { width: min(100% - 1rem, 1200px); }
   .hero-shell { padding-top: 3rem; }
   .hero-title { max-width: 12ch; }
+  .results-head { align-items: flex-start; }
 }

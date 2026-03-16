@@ -7,8 +7,12 @@ export default function PackageRow({ pkg, selected, onSelect }) {
 
   if (pkg.status !== 'ok') {
     return (
-      <tr style={{ borderTop: '1px solid var(--border)', background: selected ? 'rgba(124,108,240,0.06)' : 'transparent' }} onClick={() => onSelect(pkg.name)}>
-        <td style={cellLeft}>{pkg.name}</td>
+      <tr style={{ borderTop: '1px solid var(--border)', background: selected ? 'rgba(124,108,240,0.06)' : 'transparent' }}>
+        <td style={cellLeft}>
+          <button type="button" onClick={() => onSelect(pkg.name)} aria-pressed={selected} aria-label={`Select ${pkg.name}`} style={nameButton}>
+            <span style={{ color: 'var(--text)', fontWeight: 600 }}>{pkg.name}</span>
+          </button>
+        </td>
         <td style={cell}>—</td>
         <td style={cell}>—</td>
         <td style={cell}>—</td>
@@ -19,12 +23,14 @@ export default function PackageRow({ pkg, selected, onSelect }) {
   }
 
   return (
-    <tr style={{ borderTop: '1px solid var(--border)', background: selected ? 'rgba(124,108,240,0.06)' : 'transparent', cursor: 'pointer' }} onClick={() => onSelect(pkg.name)}>
+    <tr style={{ borderTop: '1px solid var(--border)', background: selected ? 'rgba(124,108,240,0.06)' : 'transparent' }}>
       <td style={cellLeft}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          <span style={{ color: 'var(--text)', fontWeight: 600 }}>{pkg.name}</span>
-          <span style={{ fontSize: '0.72rem', color: 'var(--dim)', fontFamily: 'JetBrains Mono, monospace' }}>{pkg.version || 'latest'}</span>
-        </div>
+        <button type="button" onClick={() => onSelect(pkg.name)} aria-pressed={selected} aria-label={`Select ${pkg.name}`} style={nameButton}>
+          <span style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-start' }}>
+            <span style={{ color: 'var(--text)', fontWeight: 600 }}>{pkg.name}</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--dim)', fontFamily: 'JetBrains Mono, monospace' }}>{pkg.version || 'latest'}</span>
+          </span>
+        </button>
       </td>
       <td style={cell}>{formatBytes(pkg.size)}</td>
       <td style={cell}>
@@ -67,6 +73,18 @@ const cell = {
   verticalAlign: 'middle',
   color: 'var(--muted)',
   fontSize: '0.82rem',
+}
+
+const nameButton = {
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  background: 'transparent',
+  border: 'none',
+  padding: 0,
+  cursor: 'pointer',
+  textAlign: 'left',
 }
 
 const goodPill = {
