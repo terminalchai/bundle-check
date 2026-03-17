@@ -142,6 +142,10 @@ export default function Home() {
   }, [packages, sortBy, sortDir])
 
   const hasResults = packages.length > 0 && !loading
+  const selectedPackage = packages.find(pkg => pkg.name === selected) ?? null
+  const heaviestPackage = packages
+    .filter(pkg => pkg.status === 'ok')
+    .sort((a, b) => (b.gzip || 0) - (a.gzip || 0))[0] ?? null
 
   return (
     <main id="app-content" style={{ minHeight: '100vh' }} aria-busy={loading}>
@@ -250,7 +254,7 @@ export default function Home() {
 
               <SummaryBar packages={packages} />
 
-              <div className="results-grid">
+              <div className="results-stack">
                 <Treemap packages={packages} selected={selected} onSelect={setSelected} />
                 <PackageTable
                   packages={sortedPackages}
@@ -259,6 +263,8 @@ export default function Home() {
                   onSort={handleSort}
                   selected={selected}
                   onSelect={setSelected}
+                  selectedPackage={selectedPackage}
+                  heaviestPackage={heaviestPackage}
                 />
               </div>
             </motion.section>

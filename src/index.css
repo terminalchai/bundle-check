@@ -329,6 +329,12 @@ main {
   align-items: start;
 }
 
+.results-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
@@ -378,6 +384,71 @@ main {
   margin-bottom: 0.85rem;
 }
 
+.table-shell {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.table-head {
+  padding: 1rem 1rem 0.4rem;
+}
+
+.table-head-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.table-insights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding: 0 1rem 1rem;
+}
+
+.table-insight-card {
+  padding: 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.014));
+}
+
+.table-insight-card-heavy {
+  box-shadow: inset 0 1px 0 rgba(248,113,113,0.12);
+}
+
+.table-insight-card-selected {
+  box-shadow: inset 0 1px 0 rgba(124,108,240,0.18);
+}
+
+.table-insight-label {
+  font-size: 0.68rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.4rem;
+}
+
+.table-insight-title {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.22rem;
+}
+
+.table-insight-copy {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
 .legend-row {
   display: flex;
   flex-wrap: wrap;
@@ -410,6 +481,10 @@ main {
   .hero-grid,
   .entry-grid,
   .results-grid { grid-template-columns: 1fr; }
+
+  .table-insights {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {

@@ -1,5 +1,6 @@
 import { ArrowDownUp } from 'lucide-react'
 import PackageRow from './PackageRow'
+import { formatBytes, format3GTime } from '../lib/formatters'
 
 const columns = [
   { key: 'name', label: 'Package', align: 'left' },
@@ -10,19 +11,53 @@ const columns = [
   { key: 'alt', label: 'Alternative' },
 ]
 
-export default function PackageTable({ packages, sortBy, sortDir, onSort, selected, onSelect }) {
+export default function PackageTable({ packages, sortBy, sortDir, onSort, selected, onSelect, selectedPackage, heaviestPackage }) {
+  const maxGzip = Math.max(...packages.map(pkg => pkg.gzip || 0), 1)
+
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '1rem', overflow: 'hidden' }} role="region" aria-label="Package analysis table">
+    <div className="table-shell" role="region" aria-label="Package analysis table">
       <div className="table-head">
         <div>
           <div className="panel-label" style={{ marginBottom: '0.3rem' }}>Package breakdown</div>
-          <div className="table-copy">Compare exact sizes, flags, and lighter-path suggestions package by package.</div>
+          <div className="table-copy">Compare exact sizes, flags, gzip weight, and lighter-path suggestions package by package.</div>
         </div>
-        <div className="table-pill">{packages.length} rows</div>
+        <div className="table-head-meta">
+          <div className="table-pill">{packages.length} rows</div>
+          <div className="table-pill">Sorted by {labelForSort(sortBy)}</div>
+        </div>
       </div>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 920 }}>
+
+      <div className="table-insights" aria-label="Package table highlights">
+        <div className="table-insight-card table-insight-card-heavy">
+          <div className="table-insight-label">Heaviest gzip package</div>
+          <div className="table-insight-title">{heaviestPackage?.name || '—'}</div>
+          <div className="table-insight-copy">
+            {heaviestPackage ? `${formatBytes(heaviestPackage.gzip)} gzip • ${format3GTime(heaviestPackage.gzip)} on 3G` : 'No package data yet'}
+          </div>
+        </div>
+
+        <div className="table-insight-card table-insight-card-selected">
+          <div className="table-insight-label">Current selection</div>
+          <div className="table-insight-title">{selectedPackage?.name || 'Nothing selected'}</div>
+          <div className="table-insight-copy">
+            {selectedPackage
+              ? `${formatBytes(selectedPackage.gzip || 0)} gzip • ${selectedPackage.hasSideEffects ? 'Has side effects' : 'Side-effect free'}`
+              : 'Select a treemap block or package row to compare details faster.'}
+          </div>
+        </div>
+      </div>
+
+      <div className="table-scroll">
+        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, minWidth: 960 }}>
           <caption className="sr-only">Package analysis results sorted by size, gzip weight, flags, and alternative suggestions.</caption>
+          <colgroup>
+            <col style={{ width: '24%' }} />
+            <col style={{ width: '12%' }} />
+            <col style={{ width: '24%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '14%' }} />
+            <col style={{ width: '16%' }} />
+          </colgroup>
           <thead>
             <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
               {columns.map(col => (
@@ -37,11 +72,15 @@ export default function PackageTable({ packages, sortBy, sortDir, onSort, select
           </thead>
           <tbody>
             {packages.map(pkg => (
-              <PackageRow key={pkg.name} pkg={pkg} selected={selected === pkg.name} onSelect={onSelect} />
+              <PackageRow key={pkg.name} pkg={pkg} selected={selected === pkg.name} onSelect={onSelect} maxGzip={maxGzip} />
             ))}
           </tbody>
         </table>
       </div>
     </div>
   )
+}
+
+function labelForSort(sortBy) {
+  return columns.find(col => col.key === sortBy)?.label ?? 'Gzip'
 }
