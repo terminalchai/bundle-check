@@ -20,8 +20,21 @@ export default function Treemap({ packages, selected, onSelect }) {
 
   return (
     <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '1rem', padding: '1rem' }}>
-      <div style={{ fontSize: '0.74rem', color: 'var(--dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>
-        Treemap by gzip size
+      <div className="treemap-head">
+        <div>
+          <div style={{ fontSize: '0.74rem', color: 'var(--dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>
+            Treemap by gzip size
+          </div>
+          <div style={{ fontSize: '0.84rem', color: 'var(--muted)', lineHeight: 1.6 }}>
+            Bigger blocks represent more compressed weight in production.
+          </div>
+        </div>
+        <div className="legend-row" aria-label="Treemap legend">
+          <span className="legend-chip legend-chip-green">Tiny</span>
+          <span className="legend-chip legend-chip-teal">Small</span>
+          <span className="legend-chip legend-chip-amber">Medium</span>
+          <span className="legend-chip legend-chip-red">Heavy</span>
+        </div>
       </div>
       <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginBottom: '0.75rem' }}>
         Click a block to highlight the same package in the table, or use the package buttons below the chart for keyboard navigation.

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BarChart3, RefreshCw, Sparkles, PackageOpen } from 'lucide-react'
+import { BarChart3, RefreshCw, Sparkles, PackageOpen, Gauge, ShieldCheck, ScanSearch, TrendingUp } from 'lucide-react'
 import DropZone from '../components/DropZone'
 import SummaryBar from '../components/SummaryBar'
 import Treemap from '../components/Treemap'
@@ -9,6 +9,48 @@ import ProgressRing from '../components/ProgressRing'
 import Toast from '../components/Toast'
 import { fetchPackageSizes } from '../lib/bundlephobia'
 import { getAlternative } from '../lib/alternatives'
+
+const heroFeatures = [
+  {
+    icon: Gauge,
+    title: 'See the real production weight',
+    description: 'Compare raw size, gzip size, and the packages that actually matter once shipped.',
+  },
+  {
+    icon: ScanSearch,
+    title: 'Spot the heaviest offenders fast',
+    description: 'The treemap turns bulky dependencies into obvious visual hotspots in seconds.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Catch packaging red flags',
+    description: 'Surface side-effect metadata and unavailable packages before they surprise you later.',
+  },
+  {
+    icon: TrendingUp,
+    title: 'Get lighter alternatives',
+    description: 'Common heavy libraries are annotated with faster, leaner replacement suggestions.',
+  },
+]
+
+const insightCards = [
+  {
+    title: 'Treemap first',
+    copy: 'Instantly see which dependency dominates the compressed bundle weight.',
+  },
+  {
+    title: '3G reality check',
+    copy: 'Translate gzip size into rough mobile download time instead of abstract KB alone.',
+  },
+  {
+    title: 'Side-effect flags',
+    copy: 'Identify packages that are harder for bundlers to tree-shake cleanly.',
+  },
+  {
+    title: 'Swap suggestions',
+    copy: 'Heavy libraries like `moment` and `lodash` get lighter-path nudges automatically.',
+  },
+]
 
 export default function Home() {
   const [project, setProject]       = useState(null)
@@ -109,28 +151,75 @@ export default function Home() {
       <div className="grid-overlay" />
 
       <section id="main-panel" className="shell hero-shell" aria-labelledby="hero-title">
-        <motion.header initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} style={{ width: '100%' }}>
-          <div className="hero-badge">
-            <BarChart3 size={14} />
-            Bundlephobia-powered package cost analyser
-          </div>
-          <h1 id="hero-title" className="hero-title">Understand the real cost of every dependency.</h1>
-          <p className="hero-copy">
-            Drop a <span>package.json</span> and instantly see raw size, gzip size, estimated 3G download time, side-effect flags, and lighter alternatives — with a visual treemap that surfaces the worst offenders first.
-          </p>
+        <motion.header initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="hero-grid">
+          <div>
+            <div className="hero-badge">
+              <BarChart3 size={14} />
+              Bundlephobia-powered package cost analyser
+            </div>
+            <h1 id="hero-title" className="hero-title">Understand the real cost of every dependency.</h1>
+            <p className="hero-copy">
+              Drop a <span>package.json</span> and instantly see raw size, gzip size, estimated 3G download time, side-effect flags, and lighter alternatives — with a visual treemap that surfaces the worst offenders first.
+            </p>
 
-          <div className="toggle-row">
-            <button type="button" className={`ghost-toggle ${includeDev ? 'active' : ''}`} onClick={handleToggleDev} aria-pressed={includeDev} aria-describedby="dev-toggle-help">
-              <Sparkles size={14} />
-              {includeDev ? 'Including devDependencies' : 'Include devDependencies'}
-            </button>
+            <div className="signal-row" aria-label="Core product signals">
+              <span className="signal-pill">Treemap-first analysis</span>
+              <span className="signal-pill">3G-aware estimates</span>
+              <span className="signal-pill">Alt suggestions built in</span>
+            </div>
+
+            <div className="toggle-row">
+              <button type="button" className={`ghost-toggle ${includeDev ? 'active' : ''}`} onClick={handleToggleDev} aria-pressed={includeDev} aria-describedby="dev-toggle-help">
+                <Sparkles size={14} />
+                {includeDev ? 'Including devDependencies' : 'Include devDependencies'}
+              </button>
+            </div>
+            <p id="dev-toggle-help" className="subtle-copy">
+              Toggle this on if you also want to count build tools, linters, test packages, and other development-only dependencies.
+            </p>
           </div>
-          <p id="dev-toggle-help" className="subtle-copy">
-            Toggle this on if you also want to count build tools, linters, test packages, and other development-only dependencies.
-          </p>
+
+          <aside className="panel hero-panel" aria-label="Feature highlights">
+            <div className="panel-label">What you get instantly</div>
+            <div className="hero-feature-list">
+              {heroFeatures.map(feature => {
+                const Icon = feature.icon
+                return (
+                  <div key={feature.title} className="hero-feature-item">
+                    <div className="hero-feature-icon">
+                      <Icon size={16} />
+                    </div>
+                    <div>
+                      <div className="hero-feature-title">{feature.title}</div>
+                      <div className="hero-feature-copy">{feature.description}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </aside>
         </motion.header>
 
-        {!hasResults && !loading && <DropZone onParsed={handleParsed} />}
+        {!hasResults && !loading && (
+          <div className="entry-grid">
+            <DropZone onParsed={handleParsed} />
+
+            <aside className="panel entry-panel" aria-label="Analysis insights preview">
+              <div className="panel-label">What gets surfaced</div>
+              <div className="insight-grid">
+                {insightCards.map(card => (
+                  <div key={card.title} className="insight-card">
+                    <div className="insight-title">{card.title}</div>
+                    <div className="insight-copy">{card.copy}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="entry-note">
+                Built for quick dependency triage: paste once, identify risk fast, then decide what deserves a swap.
+              </div>
+            </aside>
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {loading && (

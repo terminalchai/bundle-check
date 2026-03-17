@@ -9,20 +9,22 @@ export default function SummaryBar({ packages }) {
   const heavy     = ok.filter(p => (p.gzip || 0) > 50 * 1024).length
 
   const cards = [
-    { label: 'Packages analysed', value: ok.length },
-    { label: 'Total raw size', value: formatBytes(totalRaw) },
-    { label: 'Total gzip size', value: formatBytes(totalGzip) },
-    { label: 'Side-effect free', value: `${sideFree}/${ok.length || 0}` },
-    { label: 'Heavy packages', value: heavy },
-    { label: 'Unavailable', value: failed },
+    { label: 'Packages analysed', value: ok.length, note: 'Dependencies successfully priced', tone: 'var(--violet-hi)' },
+    { label: 'Total raw size', value: formatBytes(totalRaw), note: 'Uncompressed install weight', tone: 'var(--teal)' },
+    { label: 'Total gzip size', value: formatBytes(totalGzip), note: 'Closer to shipped network cost', tone: 'var(--amber)' },
+    { label: 'Side-effect free', value: `${sideFree}/${ok.length || 0}`, note: 'Good sign for tree-shaking', tone: 'var(--green)' },
+    { label: 'Heavy packages', value: heavy, note: 'Packages above 50 KB gzip', tone: 'var(--red)' },
+    { label: 'Unavailable', value: failed, note: 'Missing or unsupported packages', tone: 'var(--dim)' },
   ]
 
   return (
-    <section aria-label="Analysis summary" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.875rem' }}>
+    <section aria-label="Analysis summary" className="summary-grid">
       {cards.map(card => (
-        <div key={card.label} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '1rem', padding: '1rem' }}>
+        <div key={card.label} className="summary-card" style={{ '--summary-accent': card.tone }}>
+          <div className="summary-accent" />
           <div style={{ fontSize: '0.74rem', color: 'var(--dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>{card.label}</div>
-          <div style={{ fontSize: '1.1rem', color: 'var(--text)', fontWeight: 700 }}>{card.value}</div>
+          <div style={{ fontSize: '1.1rem', color: 'var(--text)', fontWeight: 700, marginBottom: '0.35rem' }}>{card.value}</div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.5 }}>{card.note}</div>
         </div>
       ))}
     </section>
