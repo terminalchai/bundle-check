@@ -4,7 +4,6 @@ dist/
 .vscode/
 .DS_Store
 *.log
-.vercel
 test-results/
 playwright-report/
 debug-local.png
