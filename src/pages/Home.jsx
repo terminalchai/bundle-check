@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BarChart3, RefreshCw, Sparkles, PackageOpen, Gauge, ShieldCheck, ScanSearch, TrendingUp } from 'lucide-react'
+import { BarChart3, RefreshCw, Sparkles, PackageOpen, Gauge, ShieldCheck, ScanSearch, TrendingUp, Github, ExternalLink } from 'lucide-react'
 import DropZone from '../components/DropZone'
 import SummaryBar from '../components/SummaryBar'
 import Treemap from '../components/Treemap'
@@ -271,6 +271,47 @@ export default function Home() {
           )}
         </AnimatePresence>
       </section>
+
+      <footer className="shell app-footer" aria-label="Project footer">
+        <div className="app-footer-panel">
+          <div className="app-footer-brand">
+            <div className="footer-mark">TC</div>
+            <div>
+              <div className="footer-kicker">Built by Terminal Chai</div>
+              <div className="footer-title">bundle.check</div>
+              <p className="footer-copy">
+                A fast visual dependency audit tool for developers who want to understand bundle cost before shipping.
+              </p>
+            </div>
+          </div>
+
+          <div className="app-footer-links">
+            <a href="https://github.com/terminalchai/bundle-check" target="_blank" rel="noreferrer" className="footer-link-card">
+              <Github size={16} />
+              <span>
+                <strong>Project repository</strong>
+                <small>github.com/terminalchai/bundle-check</small>
+              </span>
+            </a>
+
+            <a href="https://bundle-check.vercel.app" target="_blank" rel="noreferrer" className="footer-link-card">
+              <ExternalLink size={16} />
+              <span>
+                <strong>Live app</strong>
+                <small>bundle-check.vercel.app</small>
+              </span>
+            </a>
+
+            <a href="https://terminal-chai-portfolio.vercel.app" target="_blank" rel="noreferrer" className="footer-link-card">
+              <ExternalLink size={16} />
+              <span>
+                <strong>Terminal Chai portfolio</strong>
+                <small>See the rest of the shipped projects</small>
+              </span>
+            </a>
+          </div>
+        </div>
+      </footer>
 
       <Toast message={toast} />
     </main>
